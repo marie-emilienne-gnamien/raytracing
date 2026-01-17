@@ -21,23 +21,49 @@ class canvas:
         else:
             self.toile[y_index][x_index] = color
 
-    def createImage(self):
-        filename = "image.txt"
-        path = os.path.join("output",filename)
-        with open(path,mode='w',encoding='utf-8') as final:
+    def createImage(self, open_image=False, outdir=None, save_png=False):
+        # Write directly to image.ppm inside the repository output folder by default
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        if outdir is None:
+            outdir = os.path.join(repo_root, "output")
+        os.makedirs(outdir, exist_ok=True)
+        path = os.path.join(outdir, "image.ppm")
+
+        with open(path, mode='w', encoding='utf-8') as final:
             final.write("P3\n")
-            final.write(str(self.width) + " " + str(self.height) + "\n")
+            final.write(f"{self.width} {self.height}\n")
             final.write("255\n")
 
             for line in self.toile:
                 for i in range(len(line)):
                     clr = str(line[i])
-                    clr = clr.replace(",","")
-                    # print(clr[1:-1])
+                    clr = clr.replace(",", "")
                     final.write(clr[1:-1])
                     final.write("\n")
-        newpath = os.path.join("output","image.ppm")
-        os.rename(path,newpath)
+
+        png_path = None
+        if save_png:
+            try:
+                from PIL import Image
+                img = Image.open(path)
+                png_path = os.path.join(outdir, "image.png")
+                img.save(png_path)
+            except Exception as exc:
+                # Pillow not installed or saving failed; skip PNG silently
+                print("PNG export skipped:", exc)
+                png_path = None
+
+        if open_image:
+            try:
+                target = png_path if png_path else path
+                if os.name == 'nt':
+                    os.startfile(target)
+                else:
+                    import subprocess, sys
+                    opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
+                    subprocess.run([opener, target], check=False)
+            except Exception:
+                pass
 
                 
                 
