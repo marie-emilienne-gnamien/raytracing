@@ -62,6 +62,7 @@ viewport = vp.viewport(canvas)
 redSphere = sph.Sphere((0,-1,3),1,(255,0,0), specular=500)
 blueSphere = sph.Sphere((2, 0, 4),1,(0, 0, 255), specular=500)
 greenSphere = sph.Sphere((-2, 0, 4),1,(0, 255, 0), specular=10)
+yellowSphere = sph.Sphere((0, -5001, 0), 5000, (255, 255, 0), specular=0)
 
 # Lights: ambient + one point light + directional
 import light as lt
@@ -71,7 +72,7 @@ lights = [
     lt.Light('directional', 0.2, direction=(1,4,4))
 ]
 
-sc = scene.scene([redSphere,blueSphere,greenSphere],1,1,1, lights=lights)
+sc = scene.scene([redSphere,blueSphere,greenSphere,yellowSphere],1,1,1, lights=lights)
 
 for x in range(-canvas.width//2,(canvas.width//2)):
     for y in range(-canvas.height//2,(canvas.height//2)):
